@@ -134,10 +134,11 @@ public class CapitalizacaoSimples implements Calculos{
         double tempo = scanner.nextDouble();
 
         switch (opcao) {
-            case 1: this.tempo = tempo/360; break;
-            case 2: this.tempo = tempo/30; break;
+            case 1: this.tempo = tempo*360; break;
+            case 2: this.tempo = tempo*30; break;
             case 3: this.tempo = tempo; break;
         }
+
     }
 
     public void setValor_presente() {
@@ -162,10 +163,11 @@ public class CapitalizacaoSimples implements Calculos{
         double taxa = scanner.nextDouble();
 
         switch (opcao) {
-            case 1: this.taxa = taxa/360; break;
-            case 2: this.taxa = taxa/30; break;
-            case 3: this.taxa = taxa; break;
+            case 1: this.taxa = taxa/36000; break;
+            case 2: this.taxa = taxa/3000; break;
+            case 3: this.taxa = taxa/100; break;
         }
+
     }
 
     public void setValor_futuro() {
