@@ -5,7 +5,7 @@ public class CapitalizacaoComposta implements Calculos{
     private double valor_presente;
     private double taxa;
     private double tempo;
-    private double proporcionalidade;
+    private double capitalizacao;
     private double taxa_nominal;
     private double taxa_efetiva;
     private double tempo_desejado;
@@ -107,16 +107,16 @@ public class CapitalizacaoComposta implements Calculos{
 
     public double getTaxa_efetiva(){
         setTaxa_nominal();
-        setProporcionalidade();
+        setCapitalizacao();
 
-        return taxa_nominal * proporcionalidade;
+        return taxa_nominal * capitalizacao;
     }
 
     public double getTaxa_nominal(){
         setTaxa_efetiva();
-        setProporcionalidade();
+        setCapitalizacao();
 
-        return taxa_efetiva / proporcionalidade;
+        return taxa_efetiva / capitalizacao;
     }
 
     public double getTaxa_equivalente(){
@@ -135,18 +135,20 @@ public class CapitalizacaoComposta implements Calculos{
         this.taxa_nominal = scanner.nextDouble();
     }
 
-    public void setProporcionalidade(){
-        System.out.print("Opcoes: ");
+    public void setCapitalizacao(){
+        System.out.print("Capitalizacao: ");
         System.out.println("1 - Semestral");
-        System.out.println("2 - Trimestral");
-        System.out.println("3 - Bimestral");
-        System.out.println("4 - Mensal");
+        System.out.println("2 - Quadrimestral");
+        System.out.println("3 - Trimestral");
+        System.out.println("4 - Bimestral");
+        System.out.println("5 - Mensal");
 
         switch (scanner.nextInt()){
-            case 1: this.proporcionalidade = 2; break;
-            case 2: this.proporcionalidade = 4; break;
-            case 3: this.proporcionalidade = 3; break;
-            case 4: this.proporcionalidade = 6; break;
+            case 1: this.capitalizacao = 2; break;
+            case 2: this.capitalizacao = 3; break;
+            case 3: this.capitalizacao = 4; break;
+            case 4: this.capitalizacao = 6; break;
+            case 5: this.capitalizacao = 12; break;
         }
     }
 
