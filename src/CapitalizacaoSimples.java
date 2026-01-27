@@ -9,6 +9,7 @@ public class CapitalizacaoSimples implements Calculos{
     private double taxa_comercial;
     Scanner scanner = new Scanner(System.in);
 
+    @Override
     public void menu(){
         System.out.println("Digite uma opcao");
         System.out.println("1 - Calcular valor futuro");
@@ -65,38 +66,38 @@ public class CapitalizacaoSimples implements Calculos{
 
     public double getTaxa_efetiva(){
         setTaxa_comercial();
-        setTempo();
+        setTempo(false);
 
         return taxa_comercial / (1 - taxa_comercial * tempo);
     }
 
     public double getTaxa_comercial(){
         setTaxa_efetiva();
-        setTempo();
+        setTempo(false);
 
         return taxa_efetiva / (1 + taxa_efetiva * tempo);
     }
 
     public double getValor_presente() {
         setValor_futuro();
-        setTaxa();
-        setTempo();
+        setTaxa(true);
+        setTempo(true);
 
         return valor_futuro / (1 + taxa * tempo);
     }
 
     public double getValor_futuro() {
         setValor_presente();
-        setTaxa();
-        setTempo();
+        setTaxa(true);
+        setTempo(true);
 
         return valor_presente * (1 + taxa * tempo);
     }
 
     public double getJuros() {
         setValor_presente();
-        setTaxa();
-        setTempo();
+        setTaxa(true);
+        setTempo(true);
 
         return valor_presente * taxa * tempo;
     }
@@ -104,7 +105,7 @@ public class CapitalizacaoSimples implements Calculos{
     public double getTaxa() {
         setValor_futuro();
         setValor_presente();
-        setTempo();
+        setTempo(false);
 
         return (valor_futuro/valor_presente - 1)/tempo;
     }
@@ -112,32 +113,41 @@ public class CapitalizacaoSimples implements Calculos{
     public double getTempo() {
         setValor_presente();
         setValor_futuro();
-        setTaxa();
+        setTaxa(false);
 
         return (valor_futuro/valor_presente - 1)/taxa;
     }
 
-    public void setTempo() {
-        System.out.println("O tempo eh:");
-        System.out.println("1 - Ano");
-        System.out.println("2 - Mes");
-        System.out.println("3 - Dia");
-
-        int opcao = scanner.nextInt();
-
-        if (opcao < 1 || opcao > 3) {
-            System.out.println("Opcao invalida!");
-            return;
-        }
-
+    public void setTempo(Boolean dif_tempo) {
         System.out.println("Digite o tempo:");
         double tempo = scanner.nextDouble();
 
-        switch (opcao) {
-            case 1: this.tempo = tempo*360; break;
-            case 2: this.tempo = tempo*30; break;
-            case 3: this.tempo = tempo; break;
+        if (dif_tempo) {
+            System.out.println("O tempo eh:");
+            System.out.println("1 - Ano");
+            System.out.println("2 - Mes");
+            System.out.println("3 - Dia");
+
+            int opcao = scanner.nextInt();
+
+            if (opcao < 1 || opcao > 3) {
+                System.out.println("Opcao invalida!");
+                return;
+            }
+
+            switch (opcao) {
+                case 1:
+                    tempo *= 360;
+                    break;
+                case 2:
+                    tempo *= 30;
+                    break;
+                case 3:
+                    break;
+            }
         }
+
+        this.tempo = tempo;
 
     }
 
@@ -146,27 +156,31 @@ public class CapitalizacaoSimples implements Calculos{
         valor_presente = scanner.nextDouble();
     }
 
-    public void setTaxa() {
-        System.out.println("A taxa eh:");
-        System.out.println("1 - Anual");
-        System.out.println("2 - Mensal");
-        System.out.println("3 - Diaria");
-
-        int opcao = scanner.nextInt();
-
-        if  (opcao < 1 || opcao > 3) {
-            System.out.println("Opcao invalida!");
-            return;
-        }
-
+    public void setTaxa(Boolean dif_tempo) {
         System.out.println("Digite a taxa:");
         double taxa = scanner.nextDouble();
 
-        switch (opcao) {
-            case 1: this.taxa = taxa/36000; break;
-            case 2: this.taxa = taxa/3000; break;
-            case 3: this.taxa = taxa/100; break;
+        if (dif_tempo) {
+            System.out.println("A taxa eh:");
+            System.out.println("1 - Anual");
+            System.out.println("2 - Mensal");
+            System.out.println("3 - Diaria");
+
+            int opcao = scanner.nextInt();
+
+            if  (opcao < 1 || opcao > 3) {
+                System.out.println("Opcao invalida!");
+                return;
+            }
+
+            switch (opcao) {
+                case 1:  taxa /= 360; break;
+                case 2:  taxa /= 30; break;
+                case 3:  break;
+            }
         }
+
+        this.taxa = taxa/100;
 
     }
 
