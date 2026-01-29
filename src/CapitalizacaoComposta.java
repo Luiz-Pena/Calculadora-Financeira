@@ -1,6 +1,9 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
-public class CapitalizacaoComposta implements Calculos{
+public class CapitalizacaoComposta implements Calculos {
     private double valor_futuro;
     private double valor_presente;
     private double taxa;
@@ -9,7 +12,7 @@ public class CapitalizacaoComposta implements Calculos{
     private double taxa_nominal;
     private double taxa_efetiva;
     private double tempo_desejado;
-    Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
 
     @Override
     public void menu() {
@@ -23,49 +26,28 @@ public class CapitalizacaoComposta implements Calculos{
         System.out.println("7 - Calcular taxa nominal ");
         System.out.println("8 - Calcular taxa equivalente");
 
-        double resultado;
+        Map<Integer, Supplier<Object>> acoes = getMap();
 
-        switch (scanner.nextInt()){
-            case 1:
-                resultado = getValor_presente();
-                System.out.println("Valor presente: " + resultado);
-                break;
-
-            case 2:
-                resultado = getValor_futuro();
-                System.out.println("Valor futuro: " + resultado);
-                break;
-
-            case 3:
-                resultado = getJuros();
-                System.out.println("Juros: " + resultado);
-                break;
-
-            case 4:
-                resultado = getTaxa();
-                System.out.println("Taxa: " + resultado);
-                break;
-
-            case 5:
-                resultado = getTempo();
-                System.out.println("Tempo: " + resultado);
-                break;
-
-            case 6:
-                resultado = getTaxa_efetiva();
-                System.out.println("Taxa efetiva: " + resultado);
-                break;
-
-            case 7:
-                resultado = getTaxa_nominal();
-                System.out.println("Taxa nominal: " + resultado);
-                break;
-
-            case 8:
-                resultado = getTaxa_equivalente();
-                System.out.println("Taxa equivalente: " + resultado);
-                break;
+        int escolha = scanner.nextInt();
+        if (acoes.containsKey(escolha)) {
+            System.out.println(acoes.get(escolha).get());
+        } else {
+            System.out.println("Opção inválida!");
         }
+    }
+
+    private Map<Integer, Supplier<Object>> getMap() {
+        Map<Integer, Supplier<Object>> acoes = new HashMap<>();
+
+        acoes.put(1, () -> "Valor presente: " + getValor_presente());
+        acoes.put(2, () -> "Valor futuro: " + getValor_futuro());
+        acoes.put(3, () -> "Juros: " + getJuros());
+        acoes.put(4, () -> "Taxa: " + getTaxa());
+        acoes.put(5, () -> "Tempo: " + getTempo());
+        acoes.put(6, () -> "Taxa efetiva: " + getTaxa_efetiva());
+        acoes.put(7, () -> "Taxa nominal: " + getTaxa_nominal());
+        acoes.put(8, () -> "Taxa equivalente: " + getTaxa_equivalente());
+        return acoes;
     }
 
     public double getValor_presente() {
@@ -92,7 +74,7 @@ public class CapitalizacaoComposta implements Calculos{
     public double getTaxa() {
         setValor_presente();
         setValor_futuro();
-        setTempo(0);
+        setTempo(Periodicidade.deInt(0));
 
         return Math.pow((valor_futuro / valor_presente), 1 / tempo) - 1;
     }
@@ -105,37 +87,37 @@ public class CapitalizacaoComposta implements Calculos{
         return Math.log10(valor_futuro / valor_presente) / Math.log10(1 + taxa);
     }
 
-    public double getTaxa_efetiva(){
+    public double getTaxa_efetiva() {
         setTaxa_nominal();
         setCapitalizacao();
 
         return taxa_nominal * capitalizacao;
     }
 
-    public double getTaxa_nominal(){
+    public double getTaxa_nominal() {
         setTaxa_efetiva();
         setCapitalizacao();
 
         return taxa_efetiva / capitalizacao;
     }
 
-    public double getTaxa_equivalente(){
+    public double getTaxa_equivalente() {
         setTempo_desejado(setTaxa(true));
 
         return Math.pow(1 + taxa, tempo_desejado) - 1;
     }
 
-    public void setTaxa_efetiva(){
+    public void setTaxa_efetiva() {
         System.out.print("Digite a taxa efetiva: ");
         this.taxa_efetiva = scanner.nextDouble();
     }
 
-    public void setTaxa_nominal(){
+    public void setTaxa_nominal() {
         System.out.print("Digite a taxa nominal: ");
         this.taxa_nominal = scanner.nextDouble();
     }
 
-    public void setCapitalizacao(){
+    public void setCapitalizacao() {
         System.out.print("Capitalizacao: ");
         System.out.println("1 - Semestral");
         System.out.println("2 - Quadrimestral");
@@ -143,114 +125,108 @@ public class CapitalizacaoComposta implements Calculos{
         System.out.println("4 - Bimestral");
         System.out.println("5 - Mensal");
 
-        switch (scanner.nextInt()){
-            case 1: this.capitalizacao = 2; break;
-            case 2: this.capitalizacao = 3; break;
-            case 3: this.capitalizacao = 4; break;
-            case 4: this.capitalizacao = 6; break;
-            case 5: this.capitalizacao = 12; break;
+        Integer[] resultado = new Integer[6];
+        resultado[1] = 2;
+        resultado[2] = 3;
+        resultado[3] = 4;
+        resultado[4] = 6;
+        resultado[5] = 12;
+
+        int input = scanner.nextInt();
+
+        if (input > 0 && input < 6) {
+            this.capitalizacao = resultado[input];
         }
     }
 
-    public void setValor_futuro(){
+    public void setValor_futuro() {
         System.out.print("Digite o valor Futuro: ");
         this.valor_futuro = scanner.nextDouble();
     }
 
-    public void setValor_presente(){
+    public void setValor_presente() {
         System.out.print("Digite o valor Presente: ");
         this.valor_presente = scanner.nextDouble();
     }
 
-    public int setTaxa(Boolean dif_tempo){
-        System.out.print("Digite o taxa: ");
+    public Periodicidade setTaxa(Boolean dif_tempo) {
+        System.out.print("Digite a taxa: ");
         this.taxa = scanner.nextDouble() / 100;
 
-        if (dif_tempo){
-            System.out.println("A taxa eh: ");
-            System.out.println("1 - Anual");
-            System.out.println("2 - Mensal");
-            System.out.println("3 - Diaria");
+        if (dif_tempo) {
+            System.out.println("Escolha a periodicidade da taxa:");
 
-            return scanner.nextInt();
+            return Periodicidade.descrever(scanner);
         }
 
-        return 0;
+        return Periodicidade.NENHUMA;
     }
 
-    public void setTempo(int tempo_taxa){
-        System.out.print("Digite o tempo: ");
-        double tempo = scanner.nextDouble();
+    public void setTempo(Periodicidade tempo_taxa) {
+        System.out.print("Digite o tempo (valor numérico): ");
+        double tempoInformado = scanner.nextDouble();
 
-        if (tempo_taxa > 0) {
-            System.out.println("O tempo eh:");
-            System.out.println("1 - Anual");
-            System.out.println("2 - Mensal");
-            System.out.println("3 - Diaria");
+        if (tempo_taxa != Periodicidade.NENHUMA) {
+            System.out.println("Em qual unidade esse tempo está?");
+            Periodicidade tempoEntrada = Periodicidade.descrever(scanner);
 
-            int opcao = scanner.nextInt();
-
-            switch (opcao) {
-                case 1:
-                    if (tempo_taxa == 2) {
-                        tempo *= 12;
-                    } else if (tempo_taxa == 3) {
-                        tempo *= 360;
-                    }
+            switch (tempoEntrada) {
+                case ANUAL:
+                    if (tempo_taxa == Periodicidade.MENSAL) tempoInformado *= 12;
+                    else if (tempo_taxa == Periodicidade.DIARIA) tempoInformado *= 360;
                     break;
 
-                case 2:
-                    if (tempo_taxa == 1) {
-                        tempo /= 12;
-                    } else if (tempo_taxa == 3) {
-                        tempo *= 30;
-                    }
+                case MENSAL:
+                    if (tempo_taxa == Periodicidade.ANUAL) tempoInformado /= 12;
+                    else if (tempo_taxa == Periodicidade.DIARIA) tempoInformado *= 30;
                     break;
 
-                case 3:
-                    if (tempo_taxa == 2) {
-                        tempo /= 30;
-                    } else if (tempo_taxa == 3) {
-                        tempo /= 360;
-                    }
+                case DIARIA:
+                    if (tempo_taxa == Periodicidade.MENSAL) tempoInformado /= 30;
+                    else if (tempo_taxa == Periodicidade.ANUAL) tempoInformado /= 360;
+                    break;
+
+                default:
+                    System.out.println("Opção inválida.");
                     break;
             }
         }
 
-        this.tempo = tempo;
+        this.tempo = tempoInformado;
     }
 
-    public void setTempo_desejado(int tempo_taxa){
-        System.out.print("Digite o tempo desejado: ");
-        System.out.println("1 - Anual");
-        System.out.println("2 - Mensal");
-        System.out.println("3 - Diaria");
-
-        int opcao = scanner.nextInt();
+    public void setTempo_desejado(Periodicidade tempo_taxa) {
+        System.out.print("Digite o tempo desejado (unidade de destino): ");
+        Periodicidade opcao = Periodicidade.descrever(scanner);
 
         switch (tempo_taxa) {
-            case 1:
-                if (opcao == 2) {
-                    tempo_desejado = 1/12.;
-                } else if (opcao == 3) {
-                    tempo_desejado = 1/360.;
+            case ANUAL:
+                if (opcao == Periodicidade.MENSAL) {
+                    this.tempo_desejado = 1 / 12.0;
+                } else if (opcao == Periodicidade.DIARIA) {
+                    this.tempo_desejado = 1 / 360.0;
                 }
                 break;
 
-            case 2:
-                if (opcao == 1) {
-                    tempo_desejado = 12;
-                } else if (opcao == 3) {
-                    tempo_desejado = 1/30.;
+            case MENSAL:
+                if (opcao == Periodicidade.ANUAL) {
+                    this.tempo_desejado = 12.0;
+                } else if (opcao == Periodicidade.DIARIA) {
+                    this.tempo_desejado = 1 / 30.0;
                 }
                 break;
 
-            case 3:
-                if (opcao == 2) {
-                    tempo_desejado = 30;
-                } else if (opcao == 3) {
-                    tempo_desejado = 360;
+            case DIARIA:
+                if (opcao == Periodicidade.MENSAL) {
+                    this.tempo_desejado = 30.0;
+                } else if (opcao == Periodicidade.ANUAL) {
+                    this.tempo_desejado = 360.0;
                 }
+                break;
+
+            default:
+                this.tempo_desejado = 1.0;
+                break;
         }
     }
 }
