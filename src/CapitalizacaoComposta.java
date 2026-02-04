@@ -16,6 +16,9 @@ public class CapitalizacaoComposta implements Calculos {
 
     @Override
     public void menu() {
+        Map<Integer, Supplier<Object>> acoes = getMap();
+
+        System.out.println("----------------------");
         System.out.println("Digite uma opcao: ");
         System.out.println("1 - Calcular valor presente (capital) ");
         System.out.println("2 - Calcular valor futuro (montante) ");
@@ -25,8 +28,7 @@ public class CapitalizacaoComposta implements Calculos {
         System.out.println("6 - Calcular taxa proporcional (efetiva) ");
         System.out.println("7 - Calcular taxa nominal ");
         System.out.println("8 - Calcular taxa equivalente");
-
-        Map<Integer, Supplier<Object>> acoes = getMap();
+        System.out.println("----------------------");
 
         int escolha = scanner.nextInt();
         if (acoes.containsKey(escolha)) {
@@ -76,7 +78,7 @@ public class CapitalizacaoComposta implements Calculos {
         setValor_futuro();
         setTempo(Periodicidade.deInt(0));
 
-        return Math.pow((valor_futuro / valor_presente), 1 / tempo) - 1;
+        return 100 * Math.pow((valor_futuro / valor_presente), 1 / tempo) - 1;
     }
 
     public double getTempo() {
@@ -104,7 +106,7 @@ public class CapitalizacaoComposta implements Calculos {
     public double getTaxa_equivalente() {
         setTempo_desejado(setTaxa(true));
 
-        return Math.pow(1 + taxa, tempo_desejado) - 1;
+        return 100 * Math.pow(1 + taxa, tempo_desejado) - 1;
     }
 
     public void setTaxa_efetiva() {
@@ -118,12 +120,12 @@ public class CapitalizacaoComposta implements Calculos {
     }
 
     public void setCapitalizacao() {
-        System.out.print("Capitalizacao: ");
         System.out.println("1 - Semestral");
         System.out.println("2 - Quadrimestral");
         System.out.println("3 - Trimestral");
         System.out.println("4 - Bimestral");
         System.out.println("5 - Mensal");
+        System.out.print("Capitalizacao: ");
 
         Integer[] resultado = new Integer[6];
         resultado[1] = 2;
@@ -154,9 +156,10 @@ public class CapitalizacaoComposta implements Calculos {
         this.taxa = scanner.nextDouble() / 100;
 
         if (dif_tempo) {
-            System.out.println("Escolha a periodicidade da taxa:");
+            Periodicidade.descrever();
+            System.out.print("Escolha a periodicidade da taxa: ");
 
-            return Periodicidade.descrever(scanner);
+            return Periodicidade.deInt(scanner.nextInt());
         }
 
         return Periodicidade.NENHUMA;
@@ -167,8 +170,9 @@ public class CapitalizacaoComposta implements Calculos {
         double tempoInformado = scanner.nextDouble();
 
         if (tempo_taxa != Periodicidade.NENHUMA) {
-            System.out.println("Em qual unidade esse tempo está?");
-            Periodicidade tempoEntrada = Periodicidade.descrever(scanner);
+            Periodicidade.descrever();
+            System.out.print("Digite a unidade desse tempo: ");
+            Periodicidade tempoEntrada = Periodicidade.deInt(scanner.nextInt());
 
             switch (tempoEntrada) {
                 case ANUAL:
@@ -196,8 +200,10 @@ public class CapitalizacaoComposta implements Calculos {
     }
 
     public void setTempo_desejado(Periodicidade tempo_taxa) {
+        Periodicidade.descrever();
         System.out.print("Digite o tempo desejado (unidade de destino): ");
-        Periodicidade opcao = Periodicidade.descrever(scanner);
+
+        Periodicidade opcao = Periodicidade.deInt(scanner.nextInt());
 
         switch (tempo_taxa) {
             case ANUAL:

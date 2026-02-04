@@ -17,21 +17,15 @@ public class Main {
         do {
             System.out.println("==============================");
             System.out.println("Menu: ");
-            System.out.println("1 - Capitalizao Simples: ");
-            System.out.println("2 - Capitalizacao Composta: ");
+            System.out.println("1 - Capitalizao Simples");
+            System.out.println("2 - Capitalizacao Composta");
             System.out.println("4 - Sair");
             System.out.println("==============================");
 
             ops = sc.nextInt();
 
-            switch (ops) {
-                case 1:
-                    opcoes[1].menu();
-                    break;
-
-                case 2:
-                    opcoes[2].menu();
-                    break;
+            if (ops > 1 && ops < 4) {
+                opcoes[ops].menu();
             }
         } while (ops != 4);
     }

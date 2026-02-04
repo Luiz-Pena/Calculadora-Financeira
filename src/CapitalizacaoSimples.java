@@ -1,4 +1,7 @@
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Supplier;
 
 public class CapitalizacaoSimples implements Calculos{
     private double valor_futuro;
@@ -11,71 +14,52 @@ public class CapitalizacaoSimples implements Calculos{
 
     @Override
     public void menu(){
+        Map<Integer, Supplier<Object>> acoes = getMap();
+
+        System.out.println("----------------------");
         System.out.println("Digite uma opcao");
-        System.out.println("1 - Calcular valor futuro");
-        System.out.println("2 - Calcular valor presente");
-        System.out.println("3 - Calcular tempo");
+        System.out.println("1 - Calcular valor presente");
+        System.out.println("2 - Calcular valor futuro");
+        System.out.println("3 - Calcular juros");
         System.out.println("4 - Calcular taxa");
-        System.out.println("5 - Calcular juros");
+        System.out.println("5 - Calcular tempo");
         System.out.println("6 - Calcular taxa efetiva");
         System.out.println("7 - Calcular taxa comercial");
+        System.out.println("----------------------");
 
-        double resultado;
-
-        switch (scanner.nextInt()){
-            case 1:
-                resultado = getValor_futuro();
-                System.out.println("Valor futuro: " + resultado);
-                break;
-
-            case 2:
-                resultado = getValor_presente();
-                System.out.println("Valor presente: " + resultado);
-                break;
-
-            case 3:
-                 resultado = getTempo();
-                 System.out.println("Tempo: " + resultado);
-                 break;
-
-            case 4:
-                resultado = getTaxa();
-                System.out.println("Taxa: " + resultado);
-                break;
-
-            case 5:
-                resultado = getJuros();
-                System.out.println("Juros: " + resultado);
-                break;
-
-            case 6:
-                resultado = getTaxa_efetiva();
-                System.out.println("Taxa efetiva: " + resultado);
-                break;
-
-            case 7:
-                resultado = getTaxa_comercial();
-                System.out.println("Taxa comercial: " + resultado);
-                break;
-
-            default:
-                System.out.println("Opcao invalida!");
-                break;
+        int escolha = scanner.nextInt();
+        if (acoes.containsKey(escolha)) {
+            System.out.println(acoes.get(escolha).get());
+        } else {
+            System.out.println("Opção inválida!");
         }
+    }
+
+    private Map<Integer, Supplier<Object>> getMap() {
+        Map<Integer, Supplier<Object>> acoes = new HashMap<>();
+
+        acoes.put(1, () -> "Valor presente: " + getValor_presente());
+        acoes.put(2, () -> "Valor futuro: " + getValor_futuro());
+        acoes.put(3, () -> "Juros: " + getJuros());
+        acoes.put(4, () -> "Taxa: " + getTaxa() * 100);
+        acoes.put(5, () -> "Tempo: " + getTempo());
+        acoes.put(6, () -> "Taxa efetiva: " + getTaxa_efetiva() * 100);
+        acoes.put(7, () -> "Taxa comercial: " + getTaxa_comercial() * 100);
+        return acoes;
     }
 
     public double getTaxa_efetiva(){
         setTaxa_comercial();
         setTempo(false);
 
-        return taxa_comercial / (1 - taxa_comercial * tempo);
+        return 100 * (taxa_comercial / (1 - taxa_comercial * tempo));
     }
 
     public double getTaxa_comercial(){
         setTaxa_efetiva();
         setTempo(false);
 
-        return taxa_efetiva / (1 + taxa_efetiva * tempo);
+        return 100 * (taxa_efetiva / (1 + taxa_efetiva * tempo));
     }
 
     public double getValor_presente() {
@@ -107,7 +91,7 @@ public class CapitalizacaoSimples implements Calculos{
         setValor_presente();
         setTempo(false);
 
-        return (valor_futuro/valor_presente - 1)/tempo;
+        return 100 * ((valor_futuro / valor_presente - 1) / tempo);
     }
 
     public double getTempo() {
@@ -115,7 +99,7 @@ public class CapitalizacaoSimples implements Calculos{
         setValor_futuro();
         setTaxa(false);
 
-        return (valor_futuro/valor_presente - 1)/taxa;
+        return (valor_futuro / valor_presente - 1) / taxa;
     }
 
     public void setTempo(Boolean dif_tempo) {
@@ -123,10 +107,10 @@ public class CapitalizacaoSimples implements Calculos{
         double tempo = scanner.nextDouble();
 
         if (dif_tempo) {
-            System.out.println("O tempo eh:");
             System.out.println("1 - Ano");
             System.out.println("2 - Mes");
             System.out.println("3 - Dia");
+            System.out.println("O tempo eh:");
 
             int opcao = scanner.nextInt();
 
@@ -152,19 +136,19 @@ public class CapitalizacaoSimples implements Calculos{
     }
 
     public void setValor_presente() {
-        System.out.println("Digite o valor presente (Capital):");
+        System.out.print("Digite o valor presente (Capital):");
         valor_presente = scanner.nextDouble();
     }
 
     public void setTaxa(Boolean dif_tempo) {
-        System.out.println("Digite a taxa:");
+        System.out.print("Digite a taxa:");
         double taxa = scanner.nextDouble();
 
         if (dif_tempo) {
-            System.out.println("A taxa eh:");
             System.out.println("1 - Anual");
             System.out.println("2 - Mensal");
             System.out.println("3 - Diaria");
+            System.out.println("A taxa eh:");
 
             int opcao = scanner.nextInt();
 
@@ -185,17 +169,17 @@ public class CapitalizacaoSimples implements Calculos{
     }
 
     public void setValor_futuro() {
-        System.out.println("Digite o valor futuro (Montante):");
+        System.out.print("Digite o valor futuro (Montante):");
         valor_futuro = scanner.nextDouble();
     }
 
     public void setTaxa_comercial() {
-        System.out.println("Digite o taxa desconto comercial:");
-        taxa_comercial = scanner.nextDouble();;
+        System.out.print("Digite o taxa desconto comercial:");
+        taxa_comercial = scanner.nextDouble() / 100;
     }
 
     public void setTaxa_efetiva() {
-        System.out.println("Digite o taxa desconto efetiva:");
-        taxa_efetiva =  scanner.nextDouble();
+        System.out.print("Digite o taxa desconto efetiva:");
+        taxa_efetiva =  scanner.nextDouble() / 100;
     }
 }

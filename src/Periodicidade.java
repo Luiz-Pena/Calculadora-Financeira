@@ -25,14 +25,11 @@ enum Periodicidade {
         return NENHUMA;
     }
 
-    public static Periodicidade descrever (Scanner scanner) {
+    public static void descrever () {
         for (Periodicidade p : Periodicidade.values()) {
             if (p != Periodicidade.NENHUMA) {
                 System.out.println(p.getValor() + " - " + p.getDescricao());
             }
         }
-
-        int opcao = scanner.nextInt();
-        return Periodicidade.deInt(opcao);
     }
 }
