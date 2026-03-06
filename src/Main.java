@@ -13,12 +13,14 @@ public class Main {
 
         opcoes[1] = new CapitalizacaoSimples();
         opcoes[2] = new CapitalizacaoComposta();
+        opcoes[3] = new AmortizacaoVPL();
 
         do {
             System.out.println("==============================");
             System.out.println("Menu: ");
             System.out.println("1 - Capitalizao Simples");
             System.out.println("2 - Capitalizacao Composta");
+            System.out.println("3 - Amortizacao VPL");
             System.out.println("4 - Sair");
             System.out.println("==============================");
 
